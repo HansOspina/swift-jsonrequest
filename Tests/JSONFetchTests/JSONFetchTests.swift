@@ -16,7 +16,7 @@ class JSONFetchTests: XCTestCase {
 
 
         Fetch.new(host: "www.mocky.io")
-                .makeFormURLEncoded()
+                .contentType(.formURLEncoded)
                 .set(path: "/v2/5185415ba171ea3a00704eed")
                 .fetch(with: .GET) { result in
 

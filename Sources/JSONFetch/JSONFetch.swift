@@ -14,6 +14,11 @@ public enum FetchError {
     case customError(error: Error)
 }
 
+public enum FetchContentType {
+    case json
+    case formURLEncoded
+}
+
 public enum FetchResult {
     case error(error: FetchError, response: URLResponse?)
     case ok(data: Data, response: URLResponse?)
@@ -47,12 +52,20 @@ public final class Fetch {
     }
 
     public func set(path: String) -> Fetch {
+
         self.path = path
         return self
     }
 
-    public func makeFormURLEncoded() -> Fetch {
-        self.headers["Content-Type"] = "application/x-www-form-urlencoded"
+    public func contentType(_ contentType:FetchContentType) -> Fetch {
+
+        switch contentType {
+            case .formURLEncoded:
+                self.headers["Content-Type"] = "application/x-www-form-urlencoded"
+            case .json:
+                self.headers["Content-Type"] = "application/json"
+        }
+
         return self
     }
 
@@ -62,12 +75,25 @@ public final class Fetch {
     }
 
     public func add(param: String, withValue value: String) -> Fetch {
+
         self.params[param] = value
         return self
     }
 
     public func add(header: String, withValue value: String) -> Fetch {
         self.headers[header] = value
+        return self
+    }
+
+    public func setBasicAuth(user: String, password: String?) -> Fetch {
+
+        var val = "Basic \(user)"
+
+        if let p = password {
+            val += ":\(p)"
+        }
+
+        self.headers["authorization"] = val
         return self
     }
 
